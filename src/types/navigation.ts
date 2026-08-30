@@ -1,0 +1,11 @@
+export type Page =
+  | 'dashboard'
+  | 'finance-insight'
+  | 'hourly-sales'
+  | 'system-sales'
+  | 'menu-item'
+  | 'pos-journal'
+  | 'rof'
+  | 'deposit'
+  | 'maintenance'
+  | 'settings'
