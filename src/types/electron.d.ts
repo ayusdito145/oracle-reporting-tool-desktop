@@ -16,7 +16,8 @@ interface LoginResult {
 
 interface SystemHealthResult {
   ready: boolean
-  databaseConnected: boolean
+  localDbConnected: boolean
+  hqDbConnected: boolean
   message: string
 }
 interface VersionCheckResult {

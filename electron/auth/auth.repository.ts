@@ -1,6 +1,6 @@
 import sql from 'mssql'
 
-import { getSqlPool } from '../database/sqlserver.js'
+import { getHqDbPool } from '../database/hqdb.js'
 
 export interface DatabaseUser {
   username: string
@@ -13,7 +13,7 @@ export async function findUserByCredentials(
   username: string,
   password: string,
 ): Promise<DatabaseUser | null> {
-  const pool = await getSqlPool()
+const pool = await getHqDbPool()
 
   const result = await pool
     .request()

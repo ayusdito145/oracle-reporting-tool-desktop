@@ -1,8 +1,6 @@
 import { app } from 'electron'
 
-import {
-  getSqlPool,
-} from '../database/sqlserver.js'
+import { getHqDbPool } from '../database/hqdb.js'
 
 export interface VersionCheckResult {
   success: boolean
@@ -67,8 +65,7 @@ Promise<VersionCheckResult> {
     app.getVersion()
 
   try {
-    const pool =
-      await getSqlPool()
+    const pool = await getHqDbPool()
 
     const result =
       await pool.request().query(`
