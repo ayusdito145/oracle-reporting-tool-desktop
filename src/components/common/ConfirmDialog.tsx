@@ -4,7 +4,8 @@ interface ConfirmDialogProps {
   message: string
   confirmText?: string
   cancelText?: string
-  onConfirm: () => void
+  variant?: 'default' | 'danger'
+  onConfirm: () => void | Promise<void>
   onCancel: () => void
 }
 
@@ -14,6 +15,7 @@ function ConfirmDialog({
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
+  variant = 'default',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -52,13 +54,17 @@ function ConfirmDialog({
             {cancelText}
           </button>
 
-          <button
-            type="button"
-            className="dialog-button dialog-button-danger"
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
+<button
+  type="button"
+  className={`dialog-button ${
+    variant === 'danger'
+      ? 'dialog-button-danger'
+      : 'dialog-button-confirm'
+  }`}
+  onClick={onConfirm}
+>
+  {confirmText}
+</button>
         </div>
       </div>
     </div>

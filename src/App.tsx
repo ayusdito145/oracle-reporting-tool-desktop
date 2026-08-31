@@ -9,7 +9,9 @@ import DashboardPage from './pages/DashboardPage'
 import MaintenancePage from './pages/MaintenancePage'
 import SettingsPage from './pages/SettingsPage'
 import { useAuth } from './auth/useAuth'
+import RofPage from './pages/RofPage'
 import type { Page } from './types/navigation'
+
 
 function PlaceholderPage({
   title,
@@ -83,12 +85,7 @@ const { isAuthenticated } = useAuth()
         )
 
       case 'rof':
-        return (
-          <PlaceholderPage
-            title="ROF"
-            description="ROF finance module."
-          />
-        )
+  return <RofPage />
 
       case 'deposit':
         return (

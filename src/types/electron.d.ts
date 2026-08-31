@@ -27,6 +27,65 @@ interface VersionCheckResult {
   updateAvailable: boolean
   message: string
 }
+interface RofCashSource {
+  cashierName: string
+  tenderName: string
+  posAmount: number
+}
+
+interface RofNonCashSource {
+  tenderName: string
+  posAmount: number
+}
+
+interface RofCashEntry {
+  cashierName: string
+  tenderName: string
+  posAmount: number
+  actualAmount: number
+  mod: string
+  remarks: string
+}
+
+interface RofNonCashEntry {
+  tenderName: string
+  posAmount: number
+  actualAmount: number
+  remarks: string
+}
+
+interface SaveRofInput {
+  businessDate: string
+  locationName: string
+  cash: RofCashEntry[]
+  nonCash: RofNonCashEntry[]
+}
+
+interface SaveRofResult {
+  success: boolean
+  rofId?: number
+  message: string
+}
+
+interface RofSourceResult {
+  businessDate: string
+  exists: boolean
+  rofId: number | null
+  cash: RofCashSource[]
+  nonCash: RofNonCashSource[]
+}
+
+interface RofDetails {
+  exists: boolean
+  businessDate: string
+  cash: RofCashEntry[]
+  nonCash: RofNonCashEntry[]
+}
+interface DeleteRofResult {
+  success: boolean
+  message: string
+}
+
 
 declare global {
   interface Window {
@@ -47,6 +106,26 @@ declare global {
       checkVersion:
     () => Promise<VersionCheckResult>
   }
+
+rof: {
+  loadSource: (
+    businessDate: string,
+  ) => Promise<RofSourceResult>
+
+  loadDetails: (
+    businessDate: string,
+  ) => Promise<RofDetails>
+
+  create: (
+    input: SaveRofInput,
+  ) => Promise<SaveRofResult>
+  
+delete: (
+  businessDate: string,
+) => Promise<DeleteRofResult>
+
+}
+
     }
   }
 }
