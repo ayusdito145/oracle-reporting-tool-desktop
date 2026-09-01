@@ -53,3 +53,25 @@ export interface DeleteRofResult {
   success: boolean
   message: string
 }
+
+export interface RofSummaryRow {
+  businessDate: string
+  locationName: string
+  netSalesVat: number
+  vat: number
+  netSales: number
+  gcSales: number
+  cash: number
+  nonCash: number
+  variance: number
+  cashRemarks: string
+  nonCashRemarks: string
+}
+
+export interface RofSummaryResult {
+  success: boolean
+  rows: RofSummaryRow[]
+  message: string
+}
+
+

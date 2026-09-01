@@ -1,16 +1,18 @@
 import {
-deleteRofByBusinessDate,
+  deleteRofByBusinessDate,
   getCashSource,
   getNonCashSource,
   getRofStatus,
+  getRofSummary,
   getSavedCash,
   getSavedNonCash,
   saveRof,
 } from './rof.repository.js'
 
 import type {
-DeleteRofResult,
+  DeleteRofResult,
   RofDetails,
+  RofSummaryResult,
   SaveRofInput,
   SaveRofResult,
 } from './rof.types.js'
@@ -204,4 +206,73 @@ export async function deleteRof(
           : 'Unable to delete ROF.',
     }
   }
+}
+
+async function loadRofSummaryInternal(
+  dateFrom: string,
+  dateTo: string,
+  locationName: string,
+): Promise<RofSummaryResult> {
+  try {
+    if (
+      !isValidDate(dateFrom) ||
+      !isValidDate(dateTo)
+    ) {
+      return {
+        success: false,
+        rows: [],
+        message: 'Invalid date range.',
+      }
+    }
+
+    if (dateTo < dateFrom) {
+      return {
+        success: false,
+        rows: [],
+        message:
+          'Date To cannot be earlier than Date From.',
+      }
+    }
+
+    if (!locationName.trim()) {
+      return {
+        success: false,
+        rows: [],
+        message: 'Location is required.',
+      }
+    }
+
+    const rows = await getRofSummary(
+      dateFrom,
+      dateTo,
+      locationName,
+    )
+
+    return {
+      success: true,
+      rows,
+      message:
+        rows.length === 0
+          ? 'No summary records found for the selected date range.'
+          : `Summary loaded. ${rows.length} day(s) found.`,
+    }
+  } catch (error) {
+    console.error(
+      'Load ROF summary failed:',
+      error,
+    )
+
+    return {
+      success: false,
+      rows: [],
+      message:
+        error instanceof Error
+          ? error.message
+          : 'Unable to load ROF summary.',
+    }
+  }
+}
+
+export {
+  loadRofSummaryInternal as loadRofSummary,
 }

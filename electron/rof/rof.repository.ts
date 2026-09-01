@@ -7,8 +7,96 @@ import type {
   RofNonCashEntry,
   RofNonCashSource,
   RofStatus,
+  RofSummaryRow,
   SaveRofInput,
 } from './rof.types.js'
+
+function formatDateOnly(
+  value: Date,
+): string {
+  const year = value.getFullYear()
+
+  const month = String(
+    value.getMonth() + 1,
+  ).padStart(2, '0')
+
+  const day = String(
+    value.getDate(),
+  ).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+export async function getRofSummary(
+  dateFrom: string,
+  dateTo: string,
+  locationName: string,
+): Promise<RofSummaryRow[]> {
+  const pool = await getLocalDbPool()
+
+  const result = await pool
+    .request()
+    .input(
+      'dateFrom',
+      sql.Date,
+      dateFrom,
+    )
+    .input(
+      'dateTo',
+      sql.Date,
+      dateTo,
+    )
+    .input(
+      'locationName',
+      sql.VarChar,
+      locationName,
+    )
+    .query(`
+      SELECT
+        busidate,
+        locationname,
+        netsales_vat,
+        vat,
+        netsales,
+        gc_sales,
+        cash,
+        noncash,
+        variance,
+        cash_remarks,
+        noncash_remarks
+      FROM dbo.v_summary_ROF
+      WHERE busidate BETWEEN @dateFrom AND @dateTo
+        AND locationname = @locationName
+      ORDER BY busidate ASC
+    `)
+
+  return result.recordset.map((row) => ({
+    businessDate:
+      row.busidate instanceof Date
+        ? formatDateOnly(row.busidate)
+        : String(row.busidate ?? ''),
+    locationName:
+      String(row.locationname ?? ''),
+    netSalesVat:
+      Number(row.netsales_vat ?? 0),
+    vat:
+      Number(row.vat ?? 0),
+    netSales:
+      Number(row.netsales ?? 0),
+    gcSales:
+      Number(row.gc_sales ?? 0),
+    cash:
+      Number(row.cash ?? 0),
+    nonCash:
+      Number(row.noncash ?? 0),
+    variance:
+      Number(row.variance ?? 0),
+    cashRemarks:
+      String(row.cash_remarks ?? ''),
+    nonCashRemarks:
+      String(row.noncash_remarks ?? ''),
+  }))
+}
 
 export async function getCashSource(
   businessDate: string,

@@ -21,19 +21,43 @@ contextBridge.exposeInMainWorld('api', {
       ipcRenderer.invoke('system:check-version'),
   },
 
-  rof: {
-    loadSource: (businessDate: string) =>
-      ipcRenderer.invoke('rof:load-source', businessDate),
+rof: {
+  loadSource: (businessDate: string) =>
+    ipcRenderer.invoke(
+      'rof:load-source',
+      businessDate,
+    ),
 
-    loadDetails: (businessDate: string) =>
-      ipcRenderer.invoke('rof:load-details', businessDate),
+  loadDetails: (businessDate: string) =>
+    ipcRenderer.invoke(
+      'rof:load-details',
+      businessDate,
+    ),
 
-    create: (input: unknown) =>
-      ipcRenderer.invoke('rof:create', input),
+  loadSummary: (
+    dateFrom: string,
+    dateTo: string,
+    locationName: string,
+  ) =>
+    ipcRenderer.invoke(
+      'rof:load-summary',
+      dateFrom,
+      dateTo,
+      locationName,
+    ),
 
-    delete: (businessDate: string) =>
-  ipcRenderer.invoke('rof:delete', businessDate,),
-  },
+  create: (input: unknown) =>
+    ipcRenderer.invoke(
+      'rof:create',
+      input,
+    ),
+
+  delete: (businessDate: string) =>
+    ipcRenderer.invoke(
+      'rof:delete',
+      businessDate,
+    ),
+},
 })
 
 console.log('Electron preload loaded')

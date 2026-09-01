@@ -86,6 +86,26 @@ interface DeleteRofResult {
   message: string
 }
 
+interface RofSummaryRow {
+  businessDate: string
+  locationName: string
+  netSalesVat: number
+  vat: number
+  netSales: number
+  gcSales: number
+  cash: number
+  nonCash: number
+  variance: number
+  cashRemarks: string
+  nonCashRemarks: string
+}
+
+interface RofSummaryResult {
+  success: boolean
+  rows: RofSummaryRow[]
+  message: string
+}
+
 
 declare global {
   interface Window {
@@ -106,6 +126,11 @@ declare global {
       checkVersion:
     () => Promise<VersionCheckResult>
   }
+  loadSummary: (
+  dateFrom: string,
+  dateTo: string,
+  locationName: string,
+) => Promise<RofSummaryResult>
 
 rof: {
   loadSource: (
@@ -119,7 +144,7 @@ rof: {
   create: (
     input: SaveRofInput,
   ) => Promise<SaveRofResult>
-  
+
 delete: (
   businessDate: string,
 ) => Promise<DeleteRofResult>
