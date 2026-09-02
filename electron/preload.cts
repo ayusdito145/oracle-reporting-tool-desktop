@@ -4,8 +4,8 @@ import {
 } from 'electron'
 
 import type {
+  CreateDepositInput,
   DepositListInput,
-  SaveDepositInput,
   UpdateDepositInput,
 } from './deposit/deposit.types.js'
 
@@ -88,7 +88,7 @@ deposit: {
     ),
 
   create: (
-    input: SaveDepositInput,
+      input: CreateDepositInput,
   ) =>
     ipcRenderer.invoke(
       'deposit:create',
@@ -130,6 +130,31 @@ deposit: {
       depositId,
       locationName,
     ),
+
+  selectAttachment: () =>
+  ipcRenderer.invoke(
+    'deposit:select-attachment',
+  ),
+
+  getAttachment: (fileName: string) =>
+  ipcRenderer.invoke(
+    'deposit:get-attachment',
+    fileName,
+  ),
+
+downloadAttachment: (fileName: string) =>
+  ipcRenderer.invoke(
+    'deposit:download-attachment',
+    fileName,
+  ),
+
+replaceAttachment: (fileName: string) =>
+  ipcRenderer.invoke(
+    'deposit:replace-attachment',
+    fileName,
+  ),
+
+
 },
 })
 

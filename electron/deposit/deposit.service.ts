@@ -7,16 +7,29 @@ import {
   updateDeposit,
 } from './deposit.repository.js'
 
+import {
+  getDepositSource,
+} from '../rof/rof.service.js'
+
+import {
+  deleteDepositImage,
+  uploadDepositImage,
+  validateDepositImagePath,
+} from '../ftp/ftp.service.js'
+
+
 import type {
+  CreateDepositInput,
   DeleteDepositResult,
+  DepositInsert,
   DepositListInput,
   DepositListResult,
   GetDepositResult,
-  SaveDepositInput,
   SaveDepositResult,
   UpdateDepositInput,
   UpdateDepositResult,
 } from './deposit.types.js'
+
 
 function isValidDate(
   value: string,
@@ -36,8 +49,12 @@ function validNumber(
 }
 
 export async function createDeposit(
-  input: SaveDepositInput,
+  input: CreateDepositInput,
 ): Promise<SaveDepositResult> {
+  let uploadedFileName:
+    string | null =
+    null
+
   try {
     if (
       !input.locationName.trim()
@@ -83,19 +100,7 @@ export async function createDeposit(
       }
     }
 
-    if (
-      input.posAmount <= 0
-    ) {
-      return {
-        success: false,
-        message:
-          'ROF POS amount is required.',
-      }
-    }
-
     const numericValues = [
-      input.posAmount,
-      input.depositAmount,
       input.pettyCash,
       input.bir2307,
       input.openSales,
@@ -105,7 +110,9 @@ export async function createDeposit(
     if (
       numericValues.some(
         (value) =>
-          !validNumber(value),
+          !validNumber(
+            value,
+          ),
       )
     ) {
       return {
@@ -116,15 +123,60 @@ export async function createDeposit(
     }
 
     if (
-      !input.filename.trim()
+      !input.localFilePath.trim()
     ) {
       return {
         success: false,
         message:
-          'Deposit attachment is required.',
+          'Please select a deposit attachment.',
       }
     }
 
+    // Validate the renderer-provided path again in Electron.
+    validateDepositImagePath(
+      input.localFilePath,
+    )
+
+    // Get trusted ROF totals from LocalDB.
+    const rofSource =
+      await getDepositSource(
+        input.businessDate,
+      )
+
+    if (!rofSource.exists) {
+      return {
+        success: false,
+        message:
+          rofSource.message,
+      }
+    }
+
+    if (
+      !validNumber(
+        rofSource.posAmount,
+      ) ||
+      !validNumber(
+        rofSource.actualAmount,
+      )
+    ) {
+      return {
+        success: false,
+        message:
+          'ROF contains invalid cash totals.',
+      }
+    }
+
+    if (
+      rofSource.posAmount <= 0
+    ) {
+      return {
+        success: false,
+        message:
+          'ROF POS amount is required.',
+      }
+    }
+
+    // Check duplicate before uploading.
     const status =
       await getDepositStatus(
         input.businessDate,
@@ -139,16 +191,80 @@ export async function createDeposit(
       }
     }
 
+    // Upload first.
+    // If the DB insert later fails, the catch block removes the upload.
+    uploadedFileName =
+      await uploadDepositImage(
+        input.localFilePath,
+      )
+
+    const deposit:
+      DepositInsert = {
+        locationName:
+          input.locationName.trim(),
+
+        businessDate:
+          input.businessDate,
+
+        depositDate:
+          input.depositDate,
+
+        depositReference:
+          input.depositReference.trim(),
+
+        posAmount:
+          rofSource.posAmount,
+
+        depositAmount:
+          rofSource.actualAmount,
+
+        pettyCash:
+          input.pettyCash,
+
+        bir2307:
+          input.bir2307,
+
+        openSales:
+          input.openSales,
+
+        otherDepartmentExpense:
+          input.otherDepartmentExpense,
+
+        filename:
+          uploadedFileName,
+      }
+
     const depositId =
-      await saveDeposit(input)
+      await saveDeposit(
+        deposit,
+      )
 
     return {
       success: true,
       depositId,
       message:
-        'Deposit saved successfully.',
+        'Deposit image uploaded and record saved successfully.',
     }
   } catch (error) {
+    // Compensating cleanup:
+    // don't leave an orphan FTP image if HQDB save fails.
+    if (
+      uploadedFileName
+    ) {
+      try {
+        await deleteDepositImage(
+          uploadedFileName,
+        )
+      } catch (
+        cleanupError
+      ) {
+        console.error(
+          'FTP cleanup failed:',
+          cleanupError,
+        )
+      }
+    }
+
     console.error(
       'Create deposit failed:',
       error,
@@ -156,6 +272,7 @@ export async function createDeposit(
 
     return {
       success: false,
+
       message:
         error instanceof Error
           ? error.message
@@ -163,6 +280,7 @@ export async function createDeposit(
     }
   }
 }
+
 
 export async function checkDepositStatus(
   businessDate: string,
@@ -488,6 +606,27 @@ export async function removeDeposit(
           'Deposit record was not deleted.',
       }
     }
+    let attachmentWarning = ''
+
+if (existing.filename?.trim()) {
+  try {
+    await deleteDepositImage(existing.filename)
+  } catch (error) {
+    console.error(
+      'Deposit deleted but FTP attachment cleanup failed:',
+      error,
+    )
+
+    attachmentWarning =
+      ' The database record was deleted, but the FTP attachment could not be removed.'
+  }
+}
+
+return {
+  success: true,
+  message: `Deposit deleted successfully.${attachmentWarning}`,
+}
+
 
     return {
       success: true,

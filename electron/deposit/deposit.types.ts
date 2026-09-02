@@ -1,4 +1,20 @@
-export interface SaveDepositInput {
+export interface CreateDepositInput {
+  locationName: string
+  businessDate: string
+  depositDate: string
+  depositReference: string
+
+  pettyCash: number
+  bir2307: number
+  openSales: number
+  otherDepartmentExpense: number
+
+  // Local file path returned by Electron's file picker.
+  // filename is derived server-side from this path.
+  localFilePath: string
+}
+
+export interface DepositInsert {
   locationName: string
   businessDate: string
   depositDate: string
@@ -6,6 +22,7 @@ export interface SaveDepositInput {
 
   posAmount: number
   depositAmount: number
+
   pettyCash: number
   bir2307: number
   openSales: number

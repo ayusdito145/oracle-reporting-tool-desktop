@@ -115,21 +115,19 @@ interface RofDepositSource {
   message: string
 }
 
-interface SaveDepositInput {
+interface CreateDepositInput {
   locationName: string
   businessDate: string
   depositDate: string
   depositReference: string
-
-  posAmount: number
-  depositAmount: number
   pettyCash: number
   bir2307: number
   openSales: number
   otherDepartmentExpense: number
 
-  filename: string
+  localFilePath: string
 }
+
 
 interface SaveDepositResult {
   success: boolean
@@ -205,6 +203,33 @@ interface GetDepositResult {
   message: string
 }
 
+interface SelectDepositAttachmentResult {
+  canceled: boolean
+  filePath: string
+  fileName: string
+  previewDataUrl: string
+}
+
+interface DepositAttachmentPreviewResult {
+  success: boolean
+  fileName: string
+  previewDataUrl: string
+  message: string
+}
+
+interface DepositAttachmentDownloadResult {
+  success: boolean
+  canceled: boolean
+  savedPath: string
+  message: string
+}
+
+interface DepositAttachmentReplaceResult {
+  success: boolean
+  canceled: boolean
+  previewDataUrl: string
+  message: string
+}
 
 
 declare global {
@@ -267,7 +292,7 @@ deposit: {
   ) => Promise<DepositStatus>
 
   create: (
-    input: SaveDepositInput,
+    input: CreateDepositInput,
   ) => Promise<SaveDepositResult>
 
 list: (
@@ -288,6 +313,20 @@ delete: (
   locationName: string,
 ) => Promise<DeleteDepositResult>
 
+selectAttachment: () =>
+  Promise<SelectDepositAttachmentResult>
+
+getAttachment: (
+  fileName: string,
+) => Promise<DepositAttachmentPreviewResult>
+
+downloadAttachment: (
+  fileName: string,
+) => Promise<DepositAttachmentDownloadResult>
+
+replaceAttachment: (
+  fileName: string,
+) => Promise<DepositAttachmentReplaceResult>
 
 }
 

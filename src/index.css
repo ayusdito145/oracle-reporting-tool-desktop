@@ -1766,3 +1766,32 @@ body {
   width: 145px;
   min-width: 145px;
 }
+
+/* =========================================================
+   DEPOSIT
+   ========================================================= */
+
+.deposit-location-badge {
+  background:
+    var(--brand-orange-soft);
+
+  color:
+    var(--brand-orange-dark);
+}
+
+.deposit-metric-icon {
+  color:
+    var(--brand-orange);
+}
+
+.deposit-history-table {
+  min-width: 1500px;
+}
+
+.deposit-history-table th {
+  white-space: nowrap;
+}
+
+.deposit-page-size {
+  width: 75px;
+}

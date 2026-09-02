@@ -8,6 +8,7 @@ import DashboardPage from './pages/DashboardPage'
 import MaintenancePage from './pages/MaintenancePage'
 import SettingsPage from './pages/SettingsPage'
 import RofPage from './pages/RofPage'
+import DepositPage from './pages/DepositPage'
 
 import {
   useAuth,
@@ -104,13 +105,8 @@ function App() {
       case 'rof':
         return <RofPage />
 
-      case 'deposit':
-        return (
-          <PlaceholderPage
-            title="Deposit Monitoring"
-            description="Deposit monitoring and reconciliation."
-          />
-        )
+case 'deposit':
+  return <DepositPage />
 
       case 'maintenance':
         return (

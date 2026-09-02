@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { registerAuthIpc } from './ipc/auth.ipc.js'
 import {registerSystemIpc} from './ipc/system.ipc.js'
 import { registerRofIpc } from './ipc/rof.ipc.js'
+import {registerDepositIpc} from './ipc/deposit.ipc.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -38,6 +39,8 @@ ipcMain.handle('app:get-version', () => {
 registerAuthIpc()
 registerSystemIpc()
 registerRofIpc()
+registerDepositIpc()
+
 
 app.whenReady().then(() => {
   createWindow()

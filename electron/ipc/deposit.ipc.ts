@@ -12,10 +12,21 @@ import {
 } from '../deposit/deposit.service.js'
 
 import type {
+  CreateDepositInput,
   DepositListInput,
-  SaveDepositInput,
   UpdateDepositInput,
 } from '../deposit/deposit.types.js'
+
+import {
+  selectDepositAttachment,
+} from '../deposit/deposit-attachment.service.js'
+
+import {
+  downloadDepositAttachment,
+  getDepositAttachmentPreview,
+  replaceDepositAttachment,
+} from '../deposit/deposit-attachment-viewer.service.js'
+
 
 export function registerDepositIpc() {
   ipcMain.handle(
@@ -36,7 +47,7 @@ export function registerDepositIpc() {
     'deposit:create',
     async (
       _event,
-      input: SaveDepositInput,
+      input: CreateDepositInput,
     ) => {
       return createDeposit(
         input,
@@ -91,6 +102,36 @@ ipcMain.handle(
     )
   },
 )
+
+ipcMain.handle(
+  'deposit:select-attachment',
+  async () => {
+    return selectDepositAttachment()
+  },
+)
+
+ipcMain.handle(
+  'deposit:get-attachment',
+  async (_event, fileName: string) => {
+    return getDepositAttachmentPreview(fileName)
+  },
+)
+
+ipcMain.handle(
+  'deposit:download-attachment',
+  async (_event, fileName: string) => {
+    return downloadDepositAttachment(fileName)
+  },
+)
+
+ipcMain.handle(
+  'deposit:replace-attachment',
+  async (_event, fileName: string) => {
+    return replaceDepositAttachment(fileName)
+  },
+)
+
+
 
   console.log(
     'Deposit IPC registered.',

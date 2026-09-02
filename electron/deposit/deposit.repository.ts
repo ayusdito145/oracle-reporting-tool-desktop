@@ -5,10 +5,10 @@ import {
 } from '../database/hqdb.js'
 
 import type {
+  DepositInsert,
   DepositListInput,
   DepositRecord,
   DepositStatus,
-  SaveDepositInput,
   UpdateDepositInput,
 } from './deposit.types.js'
 
@@ -77,7 +77,7 @@ export async function getDepositStatus(
 }
 
 export async function saveDeposit(
-  input: SaveDepositInput,
+  input: DepositInsert,
 ): Promise<number> {
   const pool =
     await getHqDbPool()
