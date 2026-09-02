@@ -419,3 +419,55 @@ export async function deleteRofByBusinessDate(
     throw error
   }
 }
+export async function getRofCashTotals(
+  businessDate: string,
+): Promise<{
+  posAmount: number
+  actualAmount: number
+}> {
+  const pool =
+    await getLocalDbPool()
+
+  const result =
+    await pool
+      .request()
+      .input(
+        'businessDate',
+        sql.Date,
+        businessDate,
+      )
+      .query(`
+        SELECT
+          ISNULL(
+            SUM(posamt),
+            0
+          ) AS posAmount,
+
+          ISNULL(
+            SUM(actualamt),
+            0
+          ) AS actualAmount
+
+        FROM dbo.dts_rof_cash
+
+        WHERE busidate =
+          @businessDate
+      `)
+
+  const row =
+    result.recordset[0]
+
+  return {
+    posAmount:
+      Number(
+        row?.posAmount ??
+          0,
+      ),
+
+    actualAmount:
+      Number(
+        row?.actualAmount ??
+          0,
+      ),
+  }
+}

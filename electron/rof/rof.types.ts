@@ -4,6 +4,15 @@ export interface RofCashSource {
   posAmount: number
 }
 
+export interface RofDepositSource {
+  exists: boolean
+  businessDate: string
+  rofId: number | null
+  posAmount: number
+  actualAmount: number
+  message: string
+}
+
 export interface RofNonCashSource {
   tenderName: string
   posAmount: number

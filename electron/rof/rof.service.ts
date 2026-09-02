@@ -7,6 +7,7 @@ import {
   getSavedCash,
   getSavedNonCash,
   saveRof,
+  getRofCashTotals,
 } from './rof.repository.js'
 
 import type {
@@ -15,6 +16,7 @@ import type {
   RofSummaryResult,
   SaveRofInput,
   SaveRofResult,
+  RofDepositSource,
 } from './rof.types.js'
 
 function isValidDate(value: string): boolean {
@@ -275,4 +277,62 @@ async function loadRofSummaryInternal(
 
 export {
   loadRofSummaryInternal as loadRofSummary,
+}
+
+export async function getDepositSource(
+  businessDate: string,
+): Promise<RofDepositSource> {
+  try {
+    const status =
+      await getRofStatus(
+        businessDate,
+      )
+
+    if (!status.exists) {
+      return {
+        exists: false,
+        businessDate,
+        rofId: null,
+        posAmount: 0,
+        actualAmount: 0,
+        message:
+          'No ROF exists for this business date. Please create the ROF before entering a deposit.',
+      }
+    }
+
+    const totals =
+      await getRofCashTotals(
+        businessDate,
+      )
+
+    return {
+      exists: true,
+      businessDate,
+      rofId:
+        status.rofId,
+      posAmount:
+        totals.posAmount,
+      actualAmount:
+        totals.actualAmount,
+      message:
+        'ROF loaded successfully.',
+    }
+  } catch (error) {
+    console.error(
+      'Load deposit source failed:',
+      error,
+    )
+
+    return {
+      exists: false,
+      businessDate,
+      rofId: null,
+      posAmount: 0,
+      actualAmount: 0,
+      message:
+        error instanceof Error
+          ? error.message
+          : 'Unable to load ROF deposit source.',
+    }
+  }
 }

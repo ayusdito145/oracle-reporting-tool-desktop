@@ -6,6 +6,7 @@ import {
   loadRofDetails,
   loadRofSource,
   loadRofSummary,
+  getDepositSource,
 } from '../rof/rof.service.js'
 
 import type {
@@ -76,4 +77,15 @@ export function registerRofIpc() {
       )
     },
   )
+  ipcMain.handle(
+  'rof:get-deposit-source',
+  async (
+    _event,
+    businessDate: string,
+  ) => {
+    return getDepositSource(
+      businessDate,
+    )
+  },
+)
 }

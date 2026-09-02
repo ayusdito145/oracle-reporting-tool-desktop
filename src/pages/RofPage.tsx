@@ -1,4 +1,8 @@
-import { useMemo, useState } from 'react'
+import {
+  useMemo,
+  useState,
+} from 'react'
+
 import {
   BarChart3,
   CalendarDays,
@@ -7,10 +11,11 @@ import {
   Trash2,
 } from 'lucide-react'
 
-import { useAuth } from '../auth/useAuth'
-import ConfirmDialog from '../components/common/ConfirmDialog'
+import {
+  useAuth,
+} from '../auth/useAuth'
 
-import './RofPage.css'
+import ConfirmDialog from '../components/common/ConfirmDialog'
 
 interface CashRow {
   cashierName: string
@@ -42,27 +47,44 @@ interface SummaryRow {
   nonCashRemarks: string
 }
 
-type RofView = 'summary' | 'details'
+type RofView =
+  | 'summary'
+  | 'details'
 
-function formatMoney(value: number) {
-  return value.toLocaleString('en-PH', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
+function formatMoney(
+  value: number,
+) {
+  return value.toLocaleString(
+    'en-PH',
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    },
+  )
 }
 
 function todayString() {
-  const now = new Date()
+  const now =
+    new Date()
 
-  const year = now.getFullYear()
+  const year =
+    now.getFullYear()
 
-  const month = String(
-    now.getMonth() + 1,
-  ).padStart(2, '0')
+  const month =
+    String(
+      now.getMonth() + 1,
+    ).padStart(
+      2,
+      '0',
+    )
 
-  const day = String(
-    now.getDate(),
-  ).padStart(2, '0')
+  const day =
+    String(
+      now.getDate(),
+    ).padStart(
+      2,
+      '0',
+    )
 
   return `${year}-${month}-${day}`
 }
@@ -87,43 +109,64 @@ function formatBusinessDate(
 }
 
 function RofPage() {
-  const { user } = useAuth()
+  const {
+    user,
+  } = useAuth()
 
   // =========================================================
   // VIEW
   // =========================================================
 
-  const [activeView, setActiveView] =
-    useState<RofView>('summary')
+  const [
+    activeView,
+    setActiveView,
+  ] =
+    useState<RofView>(
+      'summary',
+    )
 
   // =========================================================
   // SUMMARY ROF STATE
   // =========================================================
 
-  const [dateFrom, setDateFrom] =
-    useState(todayString())
+  const [
+    dateFrom,
+    setDateFrom,
+  ] =
+    useState(
+      todayString(),
+    )
 
-  const [dateTo, setDateTo] =
-    useState(todayString())
+  const [
+    dateTo,
+    setDateTo,
+  ] =
+    useState(
+      todayString(),
+    )
 
   const [
     summaryRows,
     setSummaryRows,
-  ] = useState<SummaryRow[]>([])
+  ] =
+    useState<
+      SummaryRow[]
+    >([])
 
   const [
     summaryLoading,
     setSummaryLoading,
-  ] = useState(false)
+  ] =
+    useState(false)
 
   const [
     summaryMessage,
     setSummaryMessage,
-  ] = useState(
-    'Select a date range and generate the ROF summary.',
-  )
+  ] =
+    useState(
+      'Select a date range and generate the ROF summary.',
+    )
 
- 
   // =========================================================
   // DETAILS ROF STATE
   // =========================================================
@@ -131,80 +174,110 @@ function RofPage() {
   const [
     businessDate,
     setBusinessDate,
-  ] = useState(todayString())
+  ] =
+    useState(
+      todayString(),
+    )
 
-  const [cashRows, setCashRows] =
-    useState<CashRow[]>([])
+  const [
+    cashRows,
+    setCashRows,
+  ] =
+    useState<
+      CashRow[]
+    >([])
 
   const [
     nonCashRows,
     setNonCashRows,
-  ] = useState<NonCashRow[]>([])
+  ] =
+    useState<
+      NonCashRow[]
+    >([])
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(false)
 
-  const [saving, setSaving] =
+  const [
+    saving,
+    setSaving,
+  ] =
     useState(false)
 
-  const [deleting, setDeleting] =
+  const [
+    deleting,
+    setDeleting,
+  ] =
     useState(false)
 
-  const [rofExists, setRofExists] =
+  const [
+    rofExists,
+    setRofExists,
+  ] =
     useState(false)
 
   const [
     showDeleteConfirm,
     setShowDeleteConfirm,
-  ] = useState(false)
+  ] =
+    useState(false)
 
   const [
-  showSaveConfirm,
-  setShowSaveConfirm,
-] = useState(false)
+    showSaveConfirm,
+    setShowSaveConfirm,
+  ] =
+    useState(false)
 
-  const [message, setMessage] =
+  const [
+    message,
+    setMessage,
+  ] =
     useState(
       'Select a business date and load POS data.',
     )
-    const [
-  showValidation,
-  setShowValidation,
-] = useState(false)
 
+  const [
+    showValidation,
+    setShowValidation,
+  ] =
+    useState(false)
 
-function isCashModMissing(
-  row: CashRow,
-) {
-  return (
-    showValidation &&
-    !rofExists &&
-    row.mod.trim() === ''
-  )
-}
-
-function requestSaveRof() {
-  setShowValidation(true)
-
-  const missingMod =
-    cashRows.some(
-      (row) =>
-        row.mod.trim() === '',
+  function isCashModMissing(
+    row: CashRow,
+  ) {
+    return (
+      showValidation &&
+      !rofExists &&
+      row.mod.trim() === ''
     )
-
-  if (missingMod) {
-    setMessage(
-      'Please complete all required MOD fields before saving.',
-    )
-
-    return
   }
 
-  setShowSaveConfirm(true)
-}
+  function requestSaveRof() {
+    setShowValidation(
+      true,
+    )
 
+    const missingMod =
+      cashRows.some(
+        (row) =>
+          row.mod.trim() === '',
+      )
 
+    if (missingMod) {
+      setMessage(
+        'Please complete all required MOD fields before saving.',
+      )
 
+      return
+    }
+
+    setShowSaveConfirm(
+      true,
+    )
+  }
 
   // =========================================================
   // BUSY OVERLAY
@@ -216,40 +289,48 @@ function requestSaveRof() {
     deleting ||
     summaryLoading
 
-  const busyMessage = deleting
-    ? 'Deleting ROF...'
-    : saving
-      ? 'Saving ROF...'
-      : summaryLoading
-        ? 'Generating ROF Summary...'
-        : 'Loading ROF data...'
+  const busyMessage =
+    deleting
+      ? 'Deleting ROF...'
+      : saving
+        ? 'Saving ROF...'
+        : summaryLoading
+          ? 'Generating ROF Summary...'
+          : 'Loading ROF data...'
 
   // =========================================================
   // DETAILS TOTALS
   // =========================================================
 
-  const cashTotals = useMemo(() => {
-    return cashRows.reduce(
-      (result, row) => {
-        result.pos +=
-          row.posAmount
+  const cashTotals =
+    useMemo(() => {
+      return cashRows.reduce(
+        (
+          result,
+          row,
+        ) => {
+          result.pos +=
+            row.posAmount
 
-        result.actual +=
-          row.actualAmount
+          result.actual +=
+            row.actualAmount
 
-        return result
-      },
-      {
-        pos: 0,
-        actual: 0,
-      },
-    )
-  }, [cashRows])
+          return result
+        },
+        {
+          pos: 0,
+          actual: 0,
+        },
+      )
+    }, [cashRows])
 
   const nonCashTotals =
     useMemo(() => {
       return nonCashRows.reduce(
-        (result, row) => {
+        (
+          result,
+          row,
+        ) => {
           result.pos +=
             row.posAmount
 
@@ -280,11 +361,15 @@ function requestSaveRof() {
   const summaryTotals =
     useMemo(() => {
       return summaryRows.reduce(
-        (total, row) => {
+        (
+          total,
+          row,
+        ) => {
           total.netSalesVat +=
             row.netSalesVat
 
-          total.vat += row.vat
+          total.vat +=
+            row.vat
 
           total.netSales +=
             row.netSales
@@ -292,7 +377,8 @@ function requestSaveRof() {
           total.gcSales +=
             row.gcSales
 
-          total.cash += row.cash
+          total.cash +=
+            row.cash
 
           total.nonCash +=
             row.nonCash
@@ -327,7 +413,10 @@ function requestSaveRof() {
       return
     }
 
-    if (!dateFrom || !dateTo) {
+    if (
+      !dateFrom ||
+      !dateTo
+    ) {
       setSummaryMessage(
         'Date From and Date To are required.',
       )
@@ -335,7 +424,10 @@ function requestSaveRof() {
       return
     }
 
-    if (dateTo < dateFrom) {
+    if (
+      dateTo <
+      dateFrom
+    ) {
       setSummaryMessage(
         'Date To cannot be earlier than Date From.',
       )
@@ -344,18 +436,21 @@ function requestSaveRof() {
     }
 
     try {
-      setSummaryLoading(true)
+      setSummaryLoading(
+        true,
+      )
 
       setSummaryMessage(
         'Generating ROF summary...',
       )
 
       const result =
-        await window.api.rof.loadSummary(
-          dateFrom,
-          dateTo,
-          user.locationName,
-        )
+        await window.api.rof
+          .loadSummary(
+            dateFrom,
+            dateTo,
+            user.locationName,
+          )
 
       if (!result.success) {
         setSummaryRows([])
@@ -388,7 +483,9 @@ function requestSaveRof() {
           : 'Unable to load ROF summary.',
       )
     } finally {
-      setSummaryLoading(false)
+      setSummaryLoading(
+        false,
+      )
     }
   }
 
@@ -398,19 +495,23 @@ function requestSaveRof() {
 
   async function loadData() {
     try {
-        setShowValidation(false)
-       setLoading(true)
+      setShowValidation(
+        false,
+      )
 
-      setLoading(true)
+      setLoading(
+        true,
+      )
 
       setMessage(
         `Loading ROF data for ${businessDate}...`,
       )
 
       const source =
-        await window.api.rof.loadSource(
-          businessDate,
-        )
+        await window.api.rof
+          .loadSource(
+            businessDate,
+          )
 
       setRofExists(
         source.exists,
@@ -418,9 +519,10 @@ function requestSaveRof() {
 
       if (source.exists) {
         const details =
-          await window.api.rof.loadDetails(
-            businessDate,
-          )
+          await window.api.rof
+            .loadDetails(
+              businessDate,
+            )
 
         setCashRows(
           details.cash,
@@ -449,7 +551,8 @@ function requestSaveRof() {
             posAmount:
               row.posAmount,
 
-            actualAmount: 0,
+            actualAmount:
+              0,
 
             mod: '',
 
@@ -467,7 +570,8 @@ function requestSaveRof() {
             posAmount:
               row.posAmount,
 
-            actualAmount: 0,
+            actualAmount:
+              0,
 
             remarks: '',
           }),
@@ -496,7 +600,9 @@ function requestSaveRof() {
 
       setCashRows([])
       setNonCashRows([])
-      setRofExists(false)
+      setRofExists(
+        false,
+      )
 
       setMessage(
         error instanceof Error
@@ -504,7 +610,9 @@ function requestSaveRof() {
           : 'Unable to load ROF data.',
       )
     } finally {
-      setLoading(false)
+      setLoading(
+        false,
+      )
     }
   }
 
@@ -526,16 +634,19 @@ function requestSaveRof() {
         false,
       )
 
-      setDeleting(true)
+      setDeleting(
+        true,
+      )
 
       setMessage(
         'Deleting ROF...',
       )
 
       const result =
-        await window.api.rof.delete(
-          businessDate,
-        )
+        await window.api.rof
+          .delete(
+            businessDate,
+          )
 
       setMessage(
         result.message,
@@ -547,7 +658,9 @@ function requestSaveRof() {
 
       setCashRows([])
       setNonCashRows([])
-      setRofExists(false)
+      setRofExists(
+        false,
+      )
 
       setMessage(
         'ROF deleted successfully. You may load POS data again.',
@@ -564,7 +677,9 @@ function requestSaveRof() {
           : 'Unable to delete ROF.',
       )
     } finally {
-      setDeleting(false)
+      setDeleting(
+        false,
+      )
     }
   }
 
@@ -694,7 +809,10 @@ function requestSaveRof() {
   // =========================================================
 
   async function saveRof() {
-     setShowSaveConfirm(false)
+    setShowSaveConfirm(
+      false,
+    )
+
     if (!user) {
       setMessage(
         'Unable to determine logged-in location.',
@@ -712,15 +830,17 @@ function requestSaveRof() {
     }
 
     try {
-      setSaving(true)
+      setSaving(
+        true,
+      )
 
       setMessage(
         'Saving ROF...',
       )
 
       const result =
-        await window.api.rof.create(
-          {
+        await window.api.rof
+          .create({
             businessDate,
 
             locationName:
@@ -731,18 +851,20 @@ function requestSaveRof() {
 
             nonCash:
               nonCashRows,
-          },
-        )
+          })
 
       setMessage(
         result.message,
       )
 
-      if (
-        result.success
-      ) {
-        setRofExists(true)
-        setShowValidation(false)
+      if (result.success) {
+        setRofExists(
+          true,
+        )
+
+        setShowValidation(
+          false,
+        )
       }
     } catch (error) {
       console.error(
@@ -756,7 +878,9 @@ function requestSaveRof() {
           : 'Unable to save ROF.',
       )
     } finally {
-      setSaving(false)
+      setSaving(
+        false,
+      )
     }
   }
 
@@ -765,269 +889,423 @@ function requestSaveRof() {
   // =========================================================
 
   return (
-    <div className="rof-page">
-      {isBusy && (
-        <div className="rof-busy-overlay">
-          <div className="rof-busy-content">
-            <div className="rof-progress-circle" />
+    <div className="position-relative">
 
-            <div className="rof-busy-title">
+      {/* BUSY OVERLAY */}
+
+      {isBusy && (
+        <div
+          className="
+            position-absolute
+            top-0
+            start-0
+            w-100
+            h-100
+            d-flex
+            align-items-center
+            justify-content-center
+            bg-white
+            bg-opacity-75
+            rounded-4
+          "
+          style={{
+            zIndex: 100,
+            minHeight: '100%',
+          }}
+        >
+          <div
+            className="
+              bg-white
+              border
+              rounded-4
+              shadow-sm
+              text-center
+              px-5
+              py-4
+            "
+          >
+            <div
+              className="
+                spinner-border
+                text-primary
+                mb-3
+              "
+              role="status"
+            />
+
+            <div className="fw-semibold mb-1">
               {busyMessage}
             </div>
 
-            <div className="rof-busy-subtitle">
-              Please wait while the
-              transaction is being
-              processed.
-            </div>
+            <small className="text-secondary">
+              Please wait while the transaction
+              is being processed.
+            </small>
           </div>
         </div>
       )}
 
       {/* PAGE HEADER */}
 
-      <div className="rof-page-header">
+      <div
+        className="
+          d-flex
+          flex-column
+          flex-lg-row
+          align-items-lg-start
+          justify-content-between
+          gap-3
+          mb-4
+        "
+      >
         <div>
-          <h1>
+          <h1 className="h4 fw-bold mb-2">
             Remittance of Fund
           </h1>
 
-          <p>
-            Cash and non-cash
-            remittance monitoring per
-            business date.
+          <p className="text-secondary mb-0">
+            Cash and non-cash remittance monitoring
+            per business date.
           </p>
         </div>
 
-        <div className="rof-location">
+        <span
+          className="
+            badge
+            rounded-pill
+            px-3
+            py-2
+            rof-location-badge
+            align-self-start
+          "
+        >
           {user?.locationName ??
             'Unknown location'}
-        </div>
+        </span>
       </div>
 
       {/* VIEW TABS */}
 
-      <div className="rof-view-tabs">
-        <button
-          type="button"
-          className={
-            activeView ===
-            'summary'
-              ? 'rof-view-tab active'
-              : 'rof-view-tab'
-          }
-          disabled={isBusy}
-          onClick={() =>
-            setActiveView(
-              'summary',
-            )
-          }
+      <div className="mb-4">
+        <div
+          className="
+            btn-group
+            bg-light
+            border
+            rounded-3
+            p-1
+          "
+          role="group"
         >
-          <BarChart3
-            size={16}
-          />
+          <button
+            type="button"
+            className={`btn d-flex align-items-center gap-2 ${
+              activeView ===
+              'summary'
+                ? 'btn-primary'
+                : 'btn-light'
+            }`}
+            disabled={isBusy}
+            onClick={() =>
+              setActiveView(
+                'summary',
+              )
+            }
+          >
+            <BarChart3
+              size={16}
+            />
 
-          Summary ROF
-        </button>
+            Summary ROF
+          </button>
 
-        <button
-          type="button"
-          className={
-            activeView ===
-            'details'
-              ? 'rof-view-tab active'
-              : 'rof-view-tab'
-          }
-          disabled={isBusy}
-          onClick={() =>
-            setActiveView(
-              'details',
-            )
-          }
-        >
-          <CalendarDays
-            size={16}
-          />
+          <button
+            type="button"
+            className={`btn d-flex align-items-center gap-2 ${
+              activeView ===
+              'details'
+                ? 'btn-primary'
+                : 'btn-light'
+            }`}
+            disabled={isBusy}
+            onClick={() =>
+              setActiveView(
+                'details',
+              )
+            }
+          >
+            <CalendarDays
+              size={16}
+            />
 
-          Details ROF
-        </button>
+            Details ROF
+          </button>
+        </div>
       </div>
-
-      {/* =====================================================
-          SUMMARY VIEW
-      ====================================================== */}
 
       {activeView ===
       'summary' ? (
         <>
-          <section className="rof-filter-card">
-            <div className="rof-date-field">
-              <label htmlFor="rof-date-from">
-                <CalendarDays
-                  size={17}
-                />
+          {/* SUMMARY FILTER */}
 
-                Date From
-              </label>
+          <section
+            className="
+              card
+              border
+              rounded-4
+              mb-3
+            "
+          >
+            <div className="card-body">
+              <div className="row g-3 align-items-end">
 
-              <input
-                id="rof-date-from"
-                type="date"
-                value={
-                  dateFrom
-                }
-                max={todayString()}
-                disabled={
-                  summaryLoading
-                }
-                onChange={(
-                  event,
-                ) => {
-                  setDateFrom(
-                    event
-                      .target
-                      .value,
-                  )
+                <div className="col-12 col-md-4 col-xl-3">
+                  <label
+                    htmlFor="rof-date-from"
+                    className="
+                      form-label
+                      fw-semibold
+                      small
+                      d-flex
+                      align-items-center
+                      gap-2
+                    "
+                  >
+                    <CalendarDays
+                      size={16}
+                    />
 
-                  setSummaryRows(
-                    [],
-                  )
+                    Date From
+                  </label>
 
-                  setSummaryMessage(
-                    'Click Generate to load the selected date range.',
-                  )
-                }}
-              />
+                  <input
+                    id="rof-date-from"
+                    type="date"
+                    className="form-control"
+                    value={
+                      dateFrom
+                    }
+                    max={
+                      todayString()
+                    }
+                    disabled={
+                      summaryLoading
+                    }
+                    onChange={(
+                      event,
+                    ) => {
+                      setDateFrom(
+                        event.target
+                          .value,
+                      )
+
+                      setSummaryRows(
+                        [],
+                      )
+
+                      setSummaryMessage(
+                        'Click Generate to load the selected date range.',
+                      )
+                    }}
+                  />
+                </div>
+
+                <div className="col-12 col-md-4 col-xl-3">
+                  <label
+                    htmlFor="rof-date-to"
+                    className="
+                      form-label
+                      fw-semibold
+                      small
+                      d-flex
+                      align-items-center
+                      gap-2
+                    "
+                  >
+                    <CalendarDays
+                      size={16}
+                    />
+
+                    Date To
+                  </label>
+
+                  <input
+                    id="rof-date-to"
+                    type="date"
+                    className="form-control"
+                    value={
+                      dateTo
+                    }
+                    max={
+                      todayString()
+                    }
+                    disabled={
+                      summaryLoading
+                    }
+                    onChange={(
+                      event,
+                    ) => {
+                      setDateTo(
+                        event.target
+                          .value,
+                      )
+
+                      setSummaryRows(
+                        [],
+                      )
+
+                      setSummaryMessage(
+                        'Click Generate to load the selected date range.',
+                      )
+                    }}
+                  />
+                </div>
+
+                <div className="col-12 col-md-auto">
+                  <button
+                    type="button"
+                    className="
+                      btn
+                      btn-primary
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      gap-2
+                      w-100
+                    "
+                    disabled={
+                      summaryLoading ||
+                      !dateFrom ||
+                      !dateTo
+                    }
+                    onClick={
+                      loadSummary
+                    }
+                  >
+                    <RefreshCw
+                      size={17}
+                      className={
+                        summaryLoading
+                          ? 'spin'
+                          : ''
+                      }
+                    />
+
+                    {summaryLoading
+                      ? 'Generating...'
+                      : 'Generate'}
+                  </button>
+                </div>
+
+              </div>
             </div>
-
-            <div className="rof-date-field">
-              <label htmlFor="rof-date-to">
-                <CalendarDays
-                  size={17}
-                />
-
-                Date To
-              </label>
-
-              <input
-                id="rof-date-to"
-                type="date"
-                value={
-                  dateTo
-                }
-                max={todayString()}
-                disabled={
-                  summaryLoading
-                }
-                onChange={(
-                  event,
-                ) => {
-                  setDateTo(
-                    event
-                      .target
-                      .value,
-                  )
-
-                  setSummaryRows(
-                    [],
-                  )
-
-                  setSummaryMessage(
-                    'Click Generate to load the selected date range.',
-                  )
-                }}
-              />
-            </div>
-
-            <button
-              type="button"
-              className="rof-load-button"
-              disabled={
-                summaryLoading ||
-                !dateFrom ||
-                !dateTo
-              }
-              onClick={
-                loadSummary
-              }
-            >
-              <RefreshCw
-                size={17}
-              />
-
-              {summaryLoading
-                ? 'Generating...'
-                : 'Generate'}
-            </button>
           </section>
 
-          <div className="rof-status">
+          <div
+            className="
+              alert
+              alert-light
+              border
+              py-2
+              small
+              mb-3
+            "
+          >
             {summaryMessage}
           </div>
 
-          <section className="rof-section">
-            <div className="rof-section-header">
+          {/* SUMMARY TABLE */}
+
+          <section
+            className="
+              card
+              border
+              rounded-4
+              overflow-hidden
+              mb-4
+            "
+          >
+            <div
+              className="
+                card-header
+                bg-white
+                border-bottom
+                d-flex
+                align-items-center
+                justify-content-between
+                gap-3
+                py-3
+              "
+            >
               <div>
-                <h2>
+                <h2 className="h6 fw-bold mb-1">
                   ROF Summary
                 </h2>
 
-                <p>
-                  Consolidated
-                  remittance summary
+                <p className="small text-secondary mb-0">
+                  Consolidated remittance summary
                   per business date.
                 </p>
               </div>
 
-              <div className="rof-summary-count">
-                {
-                  summaryRows.length
-                }{' '}
+              <span
+                className="
+                  badge
+                  rounded-pill
+                  rof-location-badge
+                "
+              >
+                {summaryRows.length}{' '}
                 day
                 {summaryRows.length ===
                 1
                   ? ''
                   : 's'}
-              </div>
+              </span>
             </div>
 
-            <div className="rof-table-wrapper">
-              <table className="rof-table rof-summary-table">
-                <thead>
+            <div className="table-responsive">
+              <table
+                className="
+                  table
+                  table-hover
+                  align-middle
+                  mb-0
+                  small
+                  rof-summary-table-bootstrap
+                "
+              >
+                <thead className="table-light">
                   <tr>
                     <th>
                       Business Date
                     </th>
 
-                    <th className="numeric">
-                      Net Sales w/
+                    <th className="text-end">
+                      Net Sales w/ VAT
+                    </th>
+
+                    <th className="text-end">
                       VAT
                     </th>
 
-                    <th className="numeric">
-                      VAT
-                    </th>
-
-                    <th className="numeric">
+                    <th className="text-end">
                       Net Sales
                     </th>
 
-                    <th className="numeric">
-                      GC / Srvc
-                      Charge
+                    <th className="text-end">
+                      GC / Srvc Charge
                     </th>
 
-                    <th className="numeric">
-                      Cash
-                      Remitted
+                    <th className="text-end">
+                      Cash Remitted
                     </th>
 
-                    <th className="numeric">
-                      Non-Cash
-                      Remitted
+                    <th className="text-end">
+                      Non-Cash Remitted
                     </th>
 
-                    <th className="numeric">
+                    <th className="text-end">
                       Variance
                     </th>
 
@@ -1036,8 +1314,7 @@ function requestSaveRof() {
                     </th>
 
                     <th>
-                      Non-Cash
-                      Remarks
+                      Non-Cash Remarks
                     </th>
                   </tr>
                 </thead>
@@ -1047,14 +1324,14 @@ function requestSaveRof() {
                   0 ? (
                     <tr>
                       <td
-                        colSpan={
-                          10
-                        }
-                        className="rof-empty"
+                        colSpan={10}
+                        className="
+                          text-center
+                          text-secondary
+                          py-5
+                        "
                       >
-                        No summary
-                        records
-                        loaded.
+                        No summary records loaded.
                       </td>
                     </tr>
                   ) : (
@@ -1074,42 +1351,42 @@ function requestSaveRof() {
                               )}
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.netSalesVat,
                               )}
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.vat,
                               )}
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.netSales,
                               )}
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.gcSales,
                               )}
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.cash,
                               )}
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.nonCash,
@@ -1117,14 +1394,14 @@ function requestSaveRof() {
                             </td>
 
                             <td
-                              className={`numeric ${
+                              className={`text-end fw-semibold ${
                                 row.variance ===
                                 0
                                   ? ''
                                   : row.variance >
                                       0
-                                    ? 'positive'
-                                    : 'negative'
+                                    ? 'text-warning'
+                                    : 'text-danger'
                               }`}
                             >
                               ₱
@@ -1133,12 +1410,12 @@ function requestSaveRof() {
                               )}
                             </td>
 
-                            <td className="rof-remarks-cell">
+                            <td>
                               {row.cashRemarks ||
                                 '—'}
                             </td>
 
-                            <td className="rof-remarks-cell">
+                            <td>
                               {row.nonCashRemarks ||
                                 '—'}
                             </td>
@@ -1146,47 +1423,47 @@ function requestSaveRof() {
                         ),
                       )}
 
-                      <tr className="rof-total-row">
+                      <tr className="table-light fw-bold">
                         <td>
                           TOTAL
                         </td>
 
-                        <td className="numeric">
+                        <td className="text-end">
                           ₱
                           {formatMoney(
                             summaryTotals.netSalesVat,
                           )}
                         </td>
 
-                        <td className="numeric">
+                        <td className="text-end">
                           ₱
                           {formatMoney(
                             summaryTotals.vat,
                           )}
                         </td>
 
-                        <td className="numeric">
+                        <td className="text-end">
                           ₱
                           {formatMoney(
                             summaryTotals.netSales,
                           )}
                         </td>
 
-                        <td className="numeric">
+                        <td className="text-end">
                           ₱
                           {formatMoney(
                             summaryTotals.gcSales,
                           )}
                         </td>
 
-                        <td className="numeric">
+                        <td className="text-end">
                           ₱
                           {formatMoney(
                             summaryTotals.cash,
                           )}
                         </td>
 
-                        <td className="numeric">
+                        <td className="text-end">
                           ₱
                           {formatMoney(
                             summaryTotals.nonCash,
@@ -1194,14 +1471,14 @@ function requestSaveRof() {
                         </td>
 
                         <td
-                          className={`numeric ${
+                          className={`text-end ${
                             summaryTotals.variance ===
                             0
                               ? ''
                               : summaryTotals.variance >
                                   0
-                                ? 'positive'
-                                : 'negative'
+                                ? 'text-warning'
+                                : 'text-danger'
                           }`}
                         >
                           ₱
@@ -1222,141 +1499,161 @@ function requestSaveRof() {
         </>
       ) : (
         <>
-          {/* =================================================
-              DETAILS VIEW
-          ================================================== */}
+          {/* DETAILS FILTER */}
 
-          <section className="rof-filter-card">
-            <div className="rof-date-field">
-              <label htmlFor="rof-business-date">
-                <CalendarDays
-                  size={17}
-                />
+          <section
+            className="
+              card
+              border
+              rounded-4
+              mb-3
+            "
+          >
+            <div className="card-body">
+              <div className="row g-3 align-items-end">
 
-                Business Date
-              </label>
+                <div className="col-12 col-md-4 col-xl-3">
+                  <label
+                    htmlFor="rof-business-date"
+                    className="
+                      form-label
+                      fw-semibold
+                      small
+                      d-flex
+                      align-items-center
+                      gap-2
+                    "
+                  >
+                    <CalendarDays
+                      size={16}
+                    />
 
-              <input
-                id="rof-business-date"
-                type="date"
-                value={
-                  businessDate
-                }
-                max={todayString()}
-                disabled={
-                  isBusy
-                }
-               onChange={(event) => {
-  setBusinessDate(
-    event.target.value,
-  )
+                    Business Date
+                  </label>
 
-  setCashRows([])
-  setNonCashRows([])
-  setRofExists(false)
-  setShowValidation(false)
+                  <input
+                    id="rof-business-date"
+                    type="date"
+                    className="form-control"
+                    value={
+                      businessDate
+                    }
+                    max={
+                      todayString()
+                    }
+                    disabled={
+                      isBusy
+                    }
+                    onChange={(
+                      event,
+                    ) => {
+                      setBusinessDate(
+                        event.target
+                          .value,
+                      )
 
-  setMessage(
-    'Click Load POS Data to continue.',
-  )
-}}
-              />
+                      setCashRows([])
+                      setNonCashRows([])
+                      setRofExists(
+                        false,
+                      )
+                      setShowValidation(
+                        false,
+                      )
+
+                      setMessage(
+                        'Click Load POS Data to continue.',
+                      )
+                    }}
+                  />
+                </div>
+
+                <div className="col-12 col-md-auto">
+                  <button
+                    type="button"
+                    className="
+                      btn
+                      btn-primary
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      gap-2
+                      w-100
+                    "
+                    disabled={
+                      isBusy ||
+                      !businessDate
+                    }
+                    onClick={
+                      loadData
+                    }
+                  >
+                    <RefreshCw
+                      size={17}
+                      className={
+                        loading
+                          ? 'spin'
+                          : ''
+                      }
+                    />
+
+                    {loading
+                      ? 'Loading...'
+                      : 'Load POS Data'}
+                  </button>
+                </div>
+
+              </div>
             </div>
-
-            <button
-              type="button"
-              className="rof-load-button"
-              disabled={
-                isBusy ||
-                !businessDate
-              }
-              onClick={
-                loadData
-              }
-            >
-              <RefreshCw
-                size={17}
-              />
-
-              {loading
-                ? 'Loading...'
-                : 'Load POS Data'}
-            </button>
           </section>
 
           <div
-            className={
+            className={`alert py-2 small mb-3 ${
               rofExists
-                ? 'rof-status rof-status-warning'
-                : 'rof-status'
-            }
+                ? 'alert-warning'
+                : 'alert-light border'
+            }`}
           >
             {message}
           </div>
 
           {/* CASH */}
 
-          <section className="rof-section">
-            <div className="rof-section-header">
-              <div>
-                <h2>
-                  Cash Remittance
-                </h2>
+          <RofSectionHeader
+            title="Cash Remittance"
+            description="Cash tender grouped by cashier."
+            pos={
+              cashTotals.pos
+            }
+            actual={
+              cashTotals.actual
+            }
+            variance={
+              cashVariance
+            }
+          />
 
-                <p>
-                  Cash tender
-                  grouped by
-                  cashier.
-                </p>
-              </div>
-
-              <div className="rof-summary">
-                POS{' '}
-
-                <strong>
-                  ₱
-                  {formatMoney(
-                    cashTotals.pos,
-                  )}
-                </strong>
-
-                <span />
-
-                Actual{' '}
-
-                <strong>
-                  ₱
-                  {formatMoney(
-                    cashTotals.actual,
-                  )}
-                </strong>
-
-                <span />
-
-                Variance{' '}
-
-                <strong
-                  className={
-                    cashVariance ===
-                    0
-                      ? ''
-                      : cashVariance >
-                          0
-                        ? 'positive'
-                        : 'negative'
-                  }
-                >
-                  ₱
-                  {formatMoney(
-                    cashVariance,
-                  )}
-                </strong>
-              </div>
-            </div>
-
-            <div className="rof-table-wrapper">
-              <table className="rof-table">
-                <thead>
+          <section
+            className="
+              card
+              border
+              rounded-bottom-4
+              overflow-hidden
+              mb-4
+            "
+          >
+            <div className="table-responsive">
+              <table
+                className="
+                  table
+                  table-hover
+                  align-middle
+                  mb-0
+                  small
+                  rof-detail-table
+                "
+              >
+                <thead className="table-light">
                   <tr>
                     <th>
                       Cashier
@@ -1366,16 +1663,15 @@ function requestSaveRof() {
                       Tender
                     </th>
 
-                    <th className="numeric">
+                    <th className="text-end">
                       POS Amount
                     </th>
 
-                    <th className="amount-input-column">
-                      Actual
-                      Amount
+                    <th>
+                      Actual Amount
                     </th>
 
-                    <th className="numeric">
+                    <th className="text-end">
                       Variance
                     </th>
 
@@ -1394,13 +1690,14 @@ function requestSaveRof() {
                   0 ? (
                     <tr>
                       <td
-                        colSpan={
-                          7
-                        }
-                        className="rof-empty"
+                        colSpan={7}
+                        className="
+                          text-center
+                          text-secondary
+                          py-5
+                        "
                       >
-                        No cash data
-                        loaded.
+                        No cash data loaded.
                       </td>
                     </tr>
                   ) : (
@@ -1429,16 +1726,21 @@ function requestSaveRof() {
                               }
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.posAmount,
                               )}
                             </td>
 
-                            <td className="amount-input-column">
+                            <td>
                               <input
-                                className="rof-amount-input"
+                                className="
+                                  form-control
+                                  form-control-sm
+                                  text-end
+                                  rof-money-input
+                                "
                                 type="number"
                                 min="0"
                                 step="0.01"
@@ -1458,8 +1760,7 @@ function requestSaveRof() {
                                 ) =>
                                   updateCashActual(
                                     index,
-                                    event
-                                      .target
+                                    event.target
                                       .value,
                                   )
                                 }
@@ -1467,14 +1768,14 @@ function requestSaveRof() {
                             </td>
 
                             <td
-                              className={`numeric ${
+                              className={`text-end fw-semibold ${
                                 variance ===
                                 0
                                   ? ''
                                   : variance >
                                       0
-                                    ? 'positive'
-                                    : 'negative'
+                                    ? 'text-warning'
+                                    : 'text-danger'
                               }`}
                             >
                               ₱
@@ -1484,39 +1785,50 @@ function requestSaveRof() {
                             </td>
 
                             <td>
-                             <div className="rof-input-group">
-  <input
-    type="text"
-    value={row.mod}
-    className={
-      isCashModMissing(row)
-        ? 'rof-input-error'
-        : ''
-    }
-    disabled={
-      rofExists ||
-      saving
-    }
-    onChange={(event) =>
-      updateCashText(
-        index,
-        'mod',
-        event.target.value,
-      )
-    }
-  />
+                              <input
+                                type="text"
+                                className={`form-control form-control-sm ${
+                                  isCashModMissing(
+                                    row,
+                                  )
+                                    ? 'is-invalid'
+                                    : ''
+                                }`}
+                                value={
+                                  row.mod
+                                }
+                                disabled={
+                                  rofExists ||
+                                  saving
+                                }
+                                onChange={(
+                                  event,
+                                ) =>
+                                  updateCashText(
+                                    index,
+                                    'mod',
+                                    event.target
+                                      .value,
+                                  )
+                                }
+                              />
 
-  {isCashModMissing(row) && (
-    <span className="rof-validation-message">
-      MOD is required.
-    </span>
-  )}
-</div>
+                              {isCashModMissing(
+                                row,
+                              ) && (
+                                <div className="invalid-feedback">
+                                  MOD is required.
+                                </div>
+                              )}
                             </td>
 
                             <td>
                               <input
                                 type="text"
+                                className="
+                                  form-control
+                                  form-control-sm
+                                "
                                 value={
                                   row.remarks
                                 }
@@ -1530,8 +1842,7 @@ function requestSaveRof() {
                                   updateCashText(
                                     index,
                                     'remarks',
-                                    event
-                                      .target
+                                    event.target
                                       .value,
                                   )
                                 }
@@ -1549,83 +1860,55 @@ function requestSaveRof() {
 
           {/* NON-CASH */}
 
-          <section className="rof-section">
-            <div className="rof-section-header">
-              <div>
-                <h2>
-                  Non-Cash
-                  Remittance
-                </h2>
+          <RofSectionHeader
+            title="Non-Cash Remittance"
+            description="Card, digital, and other tender types."
+            pos={
+              nonCashTotals.pos
+            }
+            actual={
+              nonCashTotals.actual
+            }
+            variance={
+              nonCashVariance
+            }
+          />
 
-                <p>
-                  Card, digital,
-                  and other tender
-                  types.
-                </p>
-              </div>
-
-              <div className="rof-summary">
-                POS{' '}
-
-                <strong>
-                  ₱
-                  {formatMoney(
-                    nonCashTotals.pos,
-                  )}
-                </strong>
-
-                <span />
-
-                Actual{' '}
-
-                <strong>
-                  ₱
-                  {formatMoney(
-                    nonCashTotals.actual,
-                  )}
-                </strong>
-
-                <span />
-
-                Variance{' '}
-
-                <strong
-                  className={
-                    nonCashVariance ===
-                    0
-                      ? ''
-                      : nonCashVariance >
-                          0
-                        ? 'positive'
-                        : 'negative'
-                  }
-                >
-                  ₱
-                  {formatMoney(
-                    nonCashVariance,
-                  )}
-                </strong>
-              </div>
-            </div>
-
-            <div className="rof-table-wrapper">
-              <table className="rof-table">
-                <thead>
+          <section
+            className="
+              card
+              border
+              rounded-bottom-4
+              overflow-hidden
+              mb-4
+            "
+          >
+            <div className="table-responsive">
+              <table
+                className="
+                  table
+                  table-hover
+                  align-middle
+                  mb-0
+                  small
+                  rof-detail-table
+                "
+              >
+                <thead className="table-light">
                   <tr>
                     <th>
                       Tender
                     </th>
 
-                    <th className="numeric">
+                    <th className="text-end">
                       POS Amount
                     </th>
 
-                    <th className="amount-input-column">
-                      Actual
-                      Amount
+                    <th>
+                      Actual Amount
                     </th>
 
-                    <th className="numeric">
+                    <th className="text-end">
                       Variance
                     </th>
 
@@ -1640,15 +1923,14 @@ function requestSaveRof() {
                   0 ? (
                     <tr>
                       <td
-                        colSpan={
-                          5
-                        }
-                        className="rof-empty"
+                        colSpan={5}
+                        className="
+                          text-center
+                          text-secondary
+                          py-5
+                        "
                       >
-                        No
-                        non-cash
-                        data
-                        loaded.
+                        No non-cash data loaded.
                       </td>
                     </tr>
                   ) : (
@@ -1671,16 +1953,21 @@ function requestSaveRof() {
                               }
                             </td>
 
-                            <td className="numeric">
+                            <td className="text-end">
                               ₱
                               {formatMoney(
                                 row.posAmount,
                               )}
                             </td>
 
-                            <td className="amount-input-column">
+                            <td>
                               <input
-                                className="rof-amount-input"
+                                className="
+                                  form-control
+                                  form-control-sm
+                                  text-end
+                                  rof-money-input
+                                "
                                 type="number"
                                 min="0"
                                 step="0.01"
@@ -1700,8 +1987,7 @@ function requestSaveRof() {
                                 ) =>
                                   updateNonCashActual(
                                     index,
-                                    event
-                                      .target
+                                    event.target
                                       .value,
                                   )
                                 }
@@ -1709,14 +1995,14 @@ function requestSaveRof() {
                             </td>
 
                             <td
-                              className={`numeric ${
+                              className={`text-end fw-semibold ${
                                 variance ===
                                 0
                                   ? ''
                                   : variance >
                                       0
-                                    ? 'positive'
-                                    : 'negative'
+                                    ? 'text-warning'
+                                    : 'text-danger'
                               }`}
                             >
                               ₱
@@ -1728,6 +2014,10 @@ function requestSaveRof() {
                             <td>
                               <input
                                 type="text"
+                                className="
+                                  form-control
+                                  form-control-sm
+                                "
                                 value={
                                   row.remarks
                                 }
@@ -1740,8 +2030,7 @@ function requestSaveRof() {
                                 ) =>
                                   updateNonCashRemarks(
                                     index,
-                                    event
-                                      .target
+                                    event.target
                                       .value,
                                   )
                                 }
@@ -1759,11 +2048,24 @@ function requestSaveRof() {
 
           {/* ACTIONS */}
 
-          <div className="rof-actions">
+          <div
+            className="
+              d-flex
+              justify-content-end
+              gap-2
+              mb-3
+            "
+          >
             {rofExists && (
               <button
                 type="button"
-                className="rof-delete-button"
+                className="
+                  btn
+                  btn-outline-danger
+                  d-flex
+                  align-items-center
+                  gap-2
+                "
                 disabled={
                   isBusy
                 }
@@ -1783,7 +2085,13 @@ function requestSaveRof() {
 
             <button
               type="button"
-              className="rof-save-button"
+              className="
+                btn
+                btn-primary
+                d-flex
+                align-items-center
+                gap-2
+              "
               disabled={
                 saving ||
                 loading ||
@@ -1794,7 +2102,9 @@ function requestSaveRof() {
                 nonCashRows.length ===
                   0
               }
-                onClick={requestSaveRof}
+              onClick={
+                requestSaveRof
+              }
             >
               <Save
                 size={18}
@@ -1816,6 +2126,7 @@ function requestSaveRof() {
             )} will be permanently deleted. This action cannot be undone.`}
             confirmText="Delete ROF"
             cancelText="Cancel"
+            variant="danger"
             onConfirm={
               deleteRof
             }
@@ -1825,24 +2136,136 @@ function requestSaveRof() {
               )
             }
           />
+
           <ConfirmDialog
-  open={showSaveConfirm}
-  title="Save ROF?"
-  message={`Save the ROF details for ${formatBusinessDate(
-    businessDate,
-  )}? Please verify the actual amounts, MOD, and remarks before continuing.`}
-  confirmText="Save ROF"
-  cancelText="Cancel"
-  onConfirm={() => {
-    setShowSaveConfirm(false)
-    void saveRof()
-  }}
-  onCancel={() =>
-    setShowSaveConfirm(false)
-  }
-/>
+            open={
+              showSaveConfirm
+            }
+            title="Save ROF?"
+            message={`Save the ROF details for ${formatBusinessDate(
+              businessDate,
+            )}? Please verify the actual amounts, MOD, and remarks before continuing.`}
+            confirmText="Save ROF"
+            cancelText="Cancel"
+            onConfirm={() => {
+              setShowSaveConfirm(
+                false,
+              )
+
+              void saveRof()
+            }}
+            onCancel={() =>
+              setShowSaveConfirm(
+                false,
+              )
+            }
+          />
         </>
       )}
+    </div>
+  )
+}
+
+interface RofSectionHeaderProps {
+  title: string
+  description: string
+  pos: number
+  actual: number
+  variance: number
+}
+
+function RofSectionHeader({
+  title,
+  description,
+  pos,
+  actual,
+  variance,
+}: RofSectionHeaderProps) {
+  return (
+    <div
+      className="
+        bg-white
+        border
+        border-bottom-0
+        rounded-top-4
+        px-3
+        py-3
+        d-flex
+        flex-column
+        flex-xl-row
+        align-items-xl-center
+        justify-content-between
+        gap-3
+      "
+    >
+      <div>
+        <h2 className="h6 fw-bold mb-1">
+          {title}
+        </h2>
+
+        <p className="small text-secondary mb-0">
+          {description}
+        </p>
+      </div>
+
+      <div
+        className="
+          d-flex
+          flex-wrap
+          align-items-center
+          gap-3
+          small
+        "
+      >
+        <span>
+          <span className="text-secondary">
+            POS
+          </span>{' '}
+
+          <strong>
+            ₱
+            {formatMoney(
+              pos,
+            )}
+          </strong>
+        </span>
+
+        <span>
+          <span className="text-secondary">
+            Actual
+          </span>{' '}
+
+          <strong>
+            ₱
+            {formatMoney(
+              actual,
+            )}
+          </strong>
+        </span>
+
+        <span>
+          <span className="text-secondary">
+            Variance
+          </span>{' '}
+
+          <strong
+            className={
+              variance ===
+              0
+                ? ''
+                : variance >
+                    0
+                  ? 'text-warning'
+                  : 'text-danger'
+            }
+          >
+            ₱
+            {formatMoney(
+              variance,
+            )}
+          </strong>
+        </span>
+      </div>
     </div>
   )
 }

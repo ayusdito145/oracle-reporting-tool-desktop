@@ -27,75 +27,108 @@ function TopHeader({
   updateStatus = 'idle',
 }: TopHeaderProps) {
   function getUpdateLabel() {
-    switch (updateStatus) {
+    switch (
+      updateStatus
+    ) {
       case 'checking':
         return 'Checking updates...'
+
       case 'available':
         return 'Update available'
+
       case 'downloading':
         return 'Downloading update...'
+
       case 'ready':
         return 'Restart to update'
+
       default:
         return ''
     }
   }
 
   return (
-    <header className="top-header">
-      <div className="top-header-left">
+    <header className="bg-white border-bottom px-3 px-lg-4 py-3">
+
+      <div className="d-flex align-items-center justify-content-between gap-3">
+
         <div>
-          <h1 className="page-title">{title}</h1>
+          <h1 className="h5 fw-bold mb-0">
+            {title}
+          </h1>
 
-          <div className="page-subtitle">
+          <small className="text-secondary">
             Oracle Reporting Tool
-          </div>
+          </small>
         </div>
-      </div>
 
-      <div className="top-header-right">
+        <div className="d-flex align-items-center gap-2">
 
-        {updateStatus !== 'idle' && (
-          <div className={`update-status update-${updateStatus}`}>
-            <RefreshCw
-              size={15}
-              className={
-                updateStatus === 'checking' ||
-                updateStatus === 'downloading'
-                  ? 'spin'
-                  : ''
-              }
+          {updateStatus !==
+            'idle' && (
+            <div className="badge text-bg-light border d-flex align-items-center gap-2 px-3 py-2">
+
+              <RefreshCw
+                size={14}
+                className={
+                  updateStatus ===
+                    'checking' ||
+                  updateStatus ===
+                    'downloading'
+                    ? 'spin'
+                    : ''
+                }
+              />
+
+              <span>
+                {getUpdateLabel()}
+              </span>
+
+            </div>
+          )}
+
+          <span className="badge text-bg-light border">
+            {version}
+          </span>
+
+          <button
+            type="button"
+            className="btn btn-light border d-flex align-items-center justify-content-center header-icon-btn"
+            aria-label="Notifications"
+          >
+            <Bell
+              size={18}
             />
+          </button>
 
-            <span>{getUpdateLabel()}</span>
-          </div>
-        )}
+          <button
+            type="button"
+            className="btn btn-light border d-flex align-items-center gap-2 px-2 px-lg-3"
+          >
+            <span className="user-avatar d-flex align-items-center justify-content-center rounded-circle">
+              <UserRound
+                size={17}
+              />
+            </span>
 
-        <div className="app-version">
-          {version}
+            <span className="d-none d-md-flex flex-column text-start lh-sm">
+
+              <span className="fw-semibold small">
+                {userName}
+              </span>
+
+              <small className="text-secondary">
+                {userRole}
+              </small>
+
+            </span>
+
+          </button>
+
         </div>
 
-        <button className="header-icon-button">
-          <Bell size={18} />
-        </button>
-
-        <button className="user-button">
-          <div className="user-avatar">
-            <UserRound size={17} />
-          </div>
-
-          <div className="user-info">
-           <span className="user-name">
-  {userName}
-</span>
-
-<span className="user-role">
-  {userRole}
-</span>
-          </div>
-        </button>
-
       </div>
+
     </header>
   )
 }

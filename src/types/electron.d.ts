@@ -106,6 +106,106 @@ interface RofSummaryResult {
   message: string
 }
 
+interface RofDepositSource {
+  exists: boolean
+  businessDate: string
+  rofId: number | null
+  posAmount: number
+  actualAmount: number
+  message: string
+}
+
+interface SaveDepositInput {
+  locationName: string
+  businessDate: string
+  depositDate: string
+  depositReference: string
+
+  posAmount: number
+  depositAmount: number
+  pettyCash: number
+  bir2307: number
+  openSales: number
+  otherDepartmentExpense: number
+
+  filename: string
+}
+
+interface SaveDepositResult {
+  success: boolean
+  depositId?: number
+  message: string
+}
+
+interface DepositStatus {
+  exists: boolean
+  depositId: number | null
+}
+interface DepositRecord {
+  depositId: number
+  locationName: string
+  businessDate: string
+  depositDate: string
+  depositReference: string
+
+  posAmount: number
+  depositAmount: number
+  pettyCash: number
+  bir2307: number
+  openSales: number
+  otherDepartmentExpense: number
+
+  variance: number
+  filename: string
+}
+
+interface DepositListInput {
+  locationName: string
+  page: number
+  pageSize: number
+  keyword?: string
+  month?: number
+  year?: number
+}
+
+interface DepositListResult {
+  success: boolean
+  rows: DepositRecord[]
+  totalRecords: number
+  totalPages: number
+  message: string
+}
+
+interface UpdateDepositInput {
+  depositId: number
+  locationName: string
+
+  depositDate: string
+  depositReference: string
+
+  pettyCash: number
+  bir2307: number
+  openSales: number
+  otherDepartmentExpense: number
+}
+
+interface UpdateDepositResult {
+  success: boolean
+  message: string
+}
+
+interface DeleteDepositResult {
+  success: boolean
+  message: string
+}
+
+interface GetDepositResult {
+  success: boolean
+  deposit: DepositRecord | null
+  message: string
+}
+
+
 
 declare global {
   interface Window {
@@ -141,13 +241,53 @@ rof: {
     businessDate: string,
   ) => Promise<RofDetails>
 
+  loadSummary: (
+    dateFrom: string,
+    dateTo: string,
+    locationName: string,
+  ) => Promise<RofSummaryResult>
+
   create: (
     input: SaveRofInput,
   ) => Promise<SaveRofResult>
 
-delete: (
+  delete: (
+    businessDate: string,
+  ) => Promise<DeleteRofResult>
+
+getDepositSource: (
   businessDate: string,
-) => Promise<DeleteRofResult>
+) => Promise<RofDepositSource>
+
+}
+deposit: {
+  checkStatus: (
+    businessDate: string,
+    locationName: string,
+  ) => Promise<DepositStatus>
+
+  create: (
+    input: SaveDepositInput,
+  ) => Promise<SaveDepositResult>
+
+list: (
+  input: DepositListInput,
+) => Promise<DepositListResult>
+
+getById: (
+  depositId: number,
+  locationName: string,
+) => Promise<GetDepositResult>
+
+update: (
+  input: UpdateDepositInput,
+) => Promise<UpdateDepositResult>
+
+delete: (
+  depositId: number,
+  locationName: string,
+) => Promise<DeleteDepositResult>
+
 
 }
 

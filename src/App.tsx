@@ -1,17 +1,21 @@
-import { useState } from 'react'
+import {
+  useState,
+} from 'react'
 
 import AppLayout from './layouts/AppLayout'
 import LoginPage from './pages/LoginPage'
-
-
-
 import DashboardPage from './pages/DashboardPage'
 import MaintenancePage from './pages/MaintenancePage'
 import SettingsPage from './pages/SettingsPage'
-import { useAuth } from './auth/useAuth'
 import RofPage from './pages/RofPage'
-import type { Page } from './types/navigation'
 
+import {
+  useAuth,
+} from './auth/useAuth'
+
+import type {
+  Page,
+} from './types/navigation'
 
 function PlaceholderPage({
   title,
@@ -22,27 +26,40 @@ function PlaceholderPage({
 }) {
   return (
     <div>
-      <h1>{title}</h1>
-      <p>{description}</p>
+      <h1 className="h4 fw-bold">
+        {title}
+      </h1>
+
+      <p className="text-secondary">
+        {description}
+      </p>
     </div>
   )
 }
 
 function App() {
- 
-  const [activePage, setActivePage] =
-    useState<Page>('dashboard')
+  const [
+    activePage,
+    setActivePage,
+  ] =
+    useState<Page>(
+      'dashboard',
+    )
 
-const { isAuthenticated } = useAuth()
+  const {
+    isAuthenticated,
+  } = useAuth()
 
   function renderPage() {
     switch (activePage) {
-    case 'dashboard':
-  return (
-    <DashboardPage
-      onNavigate={setActivePage}
-    />
-  )
+      case 'dashboard':
+        return (
+          <DashboardPage
+            onNavigate={
+              setActivePage
+            }
+          />
+        )
 
       case 'finance-insight':
         return (
@@ -85,7 +102,7 @@ const { isAuthenticated } = useAuth()
         )
 
       case 'rof':
-  return <RofPage />
+        return <RofPage />
 
       case 'deposit':
         return (
@@ -96,26 +113,38 @@ const { isAuthenticated } = useAuth()
         )
 
       case 'maintenance':
-        return <MaintenancePage />
+        return (
+          <MaintenancePage />
+        )
 
       case 'settings':
-        return <SettingsPage />
+        return (
+          <SettingsPage />
+        )
 
       default:
-       <DashboardPage
-      onNavigate={setActivePage}
-    />
+        return (
+          <DashboardPage
+            onNavigate={
+              setActivePage
+            }
+          />
+        )
     }
   }
 
-if (!isAuthenticated) {
-  return <LoginPage />
-}
+  if (!isAuthenticated) {
+    return <LoginPage />
+  }
 
   return (
     <AppLayout
-      activePage={activePage}
-      onNavigate={setActivePage}
+      activePage={
+        activePage
+      }
+      onNavigate={
+        setActivePage
+      }
     >
       {renderPage()}
     </AppLayout>

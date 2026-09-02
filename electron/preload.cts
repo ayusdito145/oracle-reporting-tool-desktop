@@ -3,6 +3,15 @@ import {
   ipcRenderer,
 } from 'electron'
 
+import type {
+  DepositListInput,
+  SaveDepositInput,
+  UpdateDepositInput,
+} from './deposit/deposit.types.js'
+
+
+
+
 contextBridge.exposeInMainWorld('api', {
   app: {
     getVersion: () => ipcRenderer.invoke('app:get-version'),
@@ -56,6 +65,70 @@ rof: {
     ipcRenderer.invoke(
       'rof:delete',
       businessDate,
+    ),
+
+getDepositSource: (
+  businessDate: string,
+) =>
+  ipcRenderer.invoke(
+    'rof:get-deposit-source',
+    businessDate,
+  ),
+},
+
+deposit: {
+  checkStatus: (
+    businessDate: string,
+    locationName: string,
+  ) =>
+    ipcRenderer.invoke(
+      'deposit:check-status',
+      businessDate,
+      locationName,
+    ),
+
+  create: (
+    input: SaveDepositInput,
+  ) =>
+    ipcRenderer.invoke(
+      'deposit:create',
+      input,
+    ),
+
+  list: (
+    input: DepositListInput,
+  ) =>
+    ipcRenderer.invoke(
+      'deposit:list',
+      input,
+    ),
+
+  getById: (
+    depositId: number,
+    locationName: string,
+  ) =>
+    ipcRenderer.invoke(
+      'deposit:get-by-id',
+      depositId,
+      locationName,
+    ),
+
+  update: (
+    input: UpdateDepositInput,
+  ) =>
+    ipcRenderer.invoke(
+      'deposit:update',
+      input,
+    ),
+
+  delete: (
+    depositId: number,
+    locationName: string,
+  ) =>
+    ipcRenderer.invoke(
+      'deposit:delete',
+      depositId,
+      locationName,
     ),
 },
 })

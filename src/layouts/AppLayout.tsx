@@ -3,15 +3,21 @@ import {
   useState,
 } from 'react'
 
-import type { ReactNode } from 'react'
+import type {
+  ReactNode,
+} from 'react'
 
 import Sidebar from '../components/navigation/Sidebar'
 import TopHeader from '../components/navigation/TopHeader'
 import ConfirmDialog from '../components/common/ConfirmDialog'
 
-import type { Page } from '../components/navigation/Sidebar'
+import type {
+  Page,
+} from '../types/navigation'
 
-import { useAuth } from '../auth/useAuth'
+import {
+  useAuth,
+} from '../auth/useAuth'
 
 interface AppLayoutProps {
   activePage: Page
